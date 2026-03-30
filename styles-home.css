@@ -34,9 +34,11 @@ body{
 {
   margin-top: 10px;
   max-width: 200px;
-  width: 130%;
+  min-width: 90px;
+  width: 30%;
   height: 30px;
   font-size: 16px;
   border-radius: 5px;
   border: none;
+  box-shadow: 4px 4px 10px rgba(16, 16, 16, 0.2);
 }

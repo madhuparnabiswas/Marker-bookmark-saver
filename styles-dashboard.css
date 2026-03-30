@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
+
+
+
+* {
+  
+  font-family: 'Cabin';
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+
+.greeting {
+  display: flex;
+  padding: 0 30px 0 40px;
+  font-style: italic;
+}
+
+.profile-btn {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  background-color: red;
+  border: none;
+}
+
+.new {
+  display: flex;
+  padding: 0 30px 0 40px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.new-buttons button {
+  height: 30px;
+  min-width: 30px;
+  background-color: red;
+  border: none;
+  border-radius: 5px;
+}
+
+.new-btn {
+  margin-right: 70px;
+  width: 70px;
+}
