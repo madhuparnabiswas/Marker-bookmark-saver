@@ -11,3 +11,4 @@ usernameInput.addEventListener("input", () => {
 
 console.log(usernameInput);
 console.log(errorMessage);
+
