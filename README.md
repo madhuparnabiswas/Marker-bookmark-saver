@@ -4,19 +4,6 @@ A simple and responsive bookmark management web app that allows users to save, v
 
 ---
 
-## Features
-
-- Add new bookmarks with title and URL
-- View all saved bookmarks in a responsive grid layout
-- Click on a bookmark card to open the link in a new tab
-- Automatically displays website favicon
-- 3-dot menu for each bookmark
-  - Edit bookmark
-  - Delete bookmark (with confirmation modal)
-- Fully responsive layout (grid-based)
-
----
-
 ## Tech Stack
 
 ### Frontend
