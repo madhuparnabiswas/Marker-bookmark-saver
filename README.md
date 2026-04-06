@@ -48,6 +48,19 @@ A simple and responsive bookmark management web app that allows users to save, v
 
 ---
 
+## Versions
+
+### 1.0
+
+!(![alt text](assets/image.png))
+
+#### Features
+
+- Bookmarks stored in localStorage
+- Manual bookmark entry modal
+- Delete and edit option per bookmark
+- dynamic sizing of bookmark cards
+
 ## Author
 
 Madhuparna Biswas

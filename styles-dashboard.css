@@ -11,6 +11,10 @@ body {
   color: whitesmoke;
 }
 
+body button {
+  transition: background-color 0.2s ease; 
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -172,6 +176,7 @@ body {
 
 .done-btn:enabled:hover {
   background-color: rgb(204, 28, 28);
+  
 }
 
 #bookmark-list {
@@ -182,6 +187,15 @@ body {
   margin-right: 30px;
   margin-top: 10px;
 }
+
+.no-data {
+  display: none;
+  text-align: center;
+  margin-top: 40px;
+  color: gray;
+  font-size: 18px;
+}
+
 
 .bookmark-card {
   background-color: rgb(34, 34, 34);

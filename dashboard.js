@@ -65,6 +65,8 @@ function getDomain(url) {
   }
 }
 
+const noData = document.getElementById('no_data');
+
 function renderCards()
 {
   const container = document.getElementById("bookmark-list");
@@ -72,7 +74,12 @@ function renderCards()
 
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
 
+  if (bookmarks.length === 0) {
+    noData.style.display = 'block';
+    return;
+  }
 
+  noData.style.display = 'none';
 
   bookmarks.forEach((b, index) => {
     const card = document.createElement("div");
