@@ -8,40 +8,80 @@ const Bookmark = require('./models/Bookmark');
 
 const app = express();
 
-app.use(cors());
+// Guard: fail fast if MONGO_URI is missing
+if (!process.env.MONGO_URI) {
+  console.error('❌ MONGO_URI is not defined in .env');
+  process.exit(1);
+}
+
+// Middleware
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://127.0.0.1:5500' }));
 app.use(express.json());
 
-// connect to MongoDB
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message);
+    process.exit(1);
+  });
 
-// test route
+// Test route
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
-// GET bookmarks
+// GET all bookmarks
 app.get('/bookmarks', async (req, res) => {
-  const bookmarks = await Bookmark.find();
-  res.json(bookmarks);
+  try {
+    const bookmarks = await Bookmark.find();
+    res.json(bookmarks);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch bookmarks' });
+  }
 });
 
-// POST bookmark
+// POST a new bookmark
 app.post('/bookmarks', async (req, res) => {
-  const newBookmark = new Bookmark(req.body);
-  await newBookmark.save();
-  res.json(newBookmark);
-  console.log("Saving to DB:", req.body);
+  try {
+    const { title, url } = req.body;
+
+    if (!title || !url) {
+      return res.status(400).json({ error: 'title and url are required' });
+    }
+
+    const newBookmark = new Bookmark({ title, url });
+    await newBookmark.save();
+
+    console.log('Saved to DB:', newBookmark);
+    res.status(201).json(newBookmark);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save bookmark' });
+  }
 });
 
-// DELETE bookmark
+// DELETE a bookmark by ID
 app.delete('/bookmarks/:id', async (req, res) => {
-  await Bookmark.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Deleted' });
+  try {
+    const deleted = await Bookmark.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: 'Bookmark not found' });
+    }
+
+    res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid ID or delete failed' });
+  }
 });
 
-// start server
-app.listen(5000, () => {
-  console.log('Server running on http://localhost:5000');
+// 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

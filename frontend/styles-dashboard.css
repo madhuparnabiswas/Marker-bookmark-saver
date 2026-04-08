@@ -181,7 +181,7 @@ body button {
 
 #bookmark-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
   margin-left: 30px;
   gap: 15px;
   margin-right: 30px;
@@ -201,6 +201,7 @@ body button {
   background-color: rgb(34, 34, 34);
   border-radius: 7px;
   cursor: pointer;
+  max-width: 400px;
 }
 .bookmark-card:hover {
   transform: scale(1.03) ;
