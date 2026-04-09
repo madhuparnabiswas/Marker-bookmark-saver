@@ -45,17 +45,19 @@ app.get('/bookmarks', async (req, res) => {
 app.post('/bookmarks', async (req, res) => {
   try {
     const { title, url } = req.body;
-
     if (!title || !url) {
       return res.status(400).json({ error: 'title and url are required' });
     }
-
     const newBookmark = new Bookmark({ title, url });
     await newBookmark.save();
-
-    console.log('Saved to DB:', newBookmark);
     res.status(201).json(newBookmark);
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message }); // e.g. invalid URL, too long
+    }
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'This URL is already saved' }); // duplicate
+    }
     res.status(500).json({ error: 'Failed to save bookmark' });
   }
 });

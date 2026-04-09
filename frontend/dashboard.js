@@ -195,6 +195,15 @@ document.getElementById('confirm-modal').addEventListener('click', (e) => {
   }
 });
 
+// edit bookmark 
+/*document.getElementById('bookmark-list').addEventListener('click', (e) => {
+  if (e.target.classList.contains('edit-btn')) {
+   
+    
+
+  }
+});*/
+
 // Close menus on outside click
 document.addEventListener('click', (e) => {
   document.querySelectorAll('.menu').forEach((menu) => {
