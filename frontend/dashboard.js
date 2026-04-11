@@ -10,6 +10,11 @@ open_modal.addEventListener('click', () => {
 
 modal_container.addEventListener('click', (e) => {
   if (e.target === modal_container) {
+    titleInput.value = '';
+    urlInput.value = '';
+    close_modal.disabled = true;
+    editId = null;
+    document.getElementById('modal-title').textContent = 'New Bookmark';
     modal_container.classList.remove('show');
   }
 });
@@ -18,6 +23,8 @@ let titleInput = document.getElementById('title');
 let urlInput = document.getElementById('url');
 
 let deleteId = null;
+let editId = null;
+const bookmarkData = new Map(); // stores { title, url } keyed by id
 
 // --- Helpers ---
 
@@ -61,21 +68,28 @@ close_modal.addEventListener('click', () => {
     return;
   }
 
-  fetch(`${API_BASE}/bookmarks`, {
-    method: 'POST',
+  const isEditing = editId !== null;
+  const endpoint = isEditing ? `${API_BASE}/bookmarks/${editId}` : `${API_BASE}/bookmarks`;
+  const method = isEditing ? 'PUT' : 'POST';
+
+  console.log('sending:', { title, url, editId });
+  fetch(endpoint, {
+    method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title, url })
   })
     .then(res => {
       if (!res.ok) throw new Error('Server error: ' + res.status);
-      return res.json();
+      return res.text();
     })
     .then(() => {
-      // Reset form only after successful save
       titleInput.value = '';
       urlInput.value = '';
       close_modal.disabled = true;
+      editId = null;
+      document.getElementById('modal-title').textContent = 'New Bookmark';
       modal_container.classList.remove('show');
+      
       fetchBookmarks();
     })
     .catch(err => {
@@ -103,12 +117,12 @@ function renderCards(bookmarks) {
     const card = document.createElement('div');
     card.classList.add('bookmark-card');
 
-    // Use saved createdAt date, fall back to today if missing
+    bookmarkData.set(b._id, { title: b.title, url: b.url });
+
     const dateStr = b.createdAt
       ? new Date(b.createdAt).toLocaleDateString()
       : new Date().toLocaleDateString();
 
-    // Escape user-supplied content to prevent XSS
     card.innerHTML = `
       <div class="card-header">
         <p class="card-title">${escape(b.title)}</p>
@@ -140,6 +154,24 @@ function renderCards(bookmarks) {
     container.appendChild(card);
   });
 }
+
+// --- Edit Modal ---
+
+document.getElementById('bookmark-list').addEventListener('click', (e) => {
+  if (e.target.classList.contains('edit-btn')) {
+    const id = e.target.getAttribute('data-id');
+    const data = bookmarkData.get(id);
+    if (!data) return;
+
+    editId = id;
+    titleInput.value = data.title;
+    urlInput.value = data.url;
+    close_modal.disabled = false;
+    document.getElementById('modal-title').textContent = 'Edit Bookmark';
+    document.querySelectorAll('.menu').forEach(m => m.classList.remove('show'));
+    modal_container.classList.add('show');
+  }
+});
 
 // --- Delete Modal ---
 
@@ -178,21 +210,32 @@ document.getElementById('confirm-delete').addEventListener('click', () => {
 
 document.getElementById('bookmark-list').addEventListener('click', (e) => {
   if (e.target.classList.contains('menu-btn')) {
-    const menu = e.target.nextElementSibling;
 
-    // Close all other open menus first
+    e.stopPropagation();
+
+    const menu = e.target.nextElementSibling;
+    const card = e.target.closest('.bookmark-card');
+
     document.querySelectorAll('.menu').forEach(m => m.classList.remove('show'));
+    document.querySelectorAll('.bookmark-card').forEach(c => c.classList.remove('selected'));
 
     menu.classList.toggle('show');
-    // Note: stopPropagation removed — conflicts with global close listener
+
+    if (menu.classList.contains("show")) {
+      card.classList.add("selected");
+    }
   }
 });
 
 // Close confirm modal on outside click
-document.getElementById('confirm-modal').addEventListener('click', (e) => {
-  if (e.target.id === 'confirm-modal') {
-    document.getElementById('confirm-modal').classList.remove('show');
-  }
+document.addEventListener("click", () => {
+  document.querySelectorAll(".menu").forEach(menu => {
+    menu.classList.remove("show");
+  });
+
+  document.querySelectorAll(".bookmark-card").forEach(card => {
+    card.classList.remove("selected");
+  });
 });
 
 // Close menus on outside click

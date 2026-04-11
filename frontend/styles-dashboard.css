@@ -203,10 +203,16 @@ body button {
   border-radius: 7px;
   cursor: pointer;
   max-width: 400px;
+  z-index: 1;
 }
-.bookmark-card:hover {
-  transform: scale(1.03) ;
-  transition: transform 0.2s ease ;
+.bookmark-card:not(.selected):hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.bookmark-card.selected {
+  transform: scale(1.05);
+  z-index: 10;
 }
 
 .card-header {

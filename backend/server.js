@@ -15,7 +15,10 @@ if (!process.env.MONGO_URI) {
 }
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://127.0.0.1:5500' }));
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://127.0.0.1:5500',
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json());
 
 // Connect to MongoDB
@@ -57,6 +60,30 @@ app.post('/bookmarks', async (req, res) => {
     res.status(201).json(newBookmark);
   } catch (err) {
     res.status(500).json({ error: 'Failed to save bookmark' });
+  }
+});
+
+// PUT (edit) a bookmark by ID
+app.put('/bookmarks/:id', async (req, res) => {
+  try {
+    const { title, url } = req.body;
+
+    if (!title || !url) {
+      return res.status(400).json({ error: 'title and url are required' });
+    }
+
+    const updated = await Bookmark.findById(req.params.id);
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Bookmark not found' });
+    }
+
+    updated.title = title;
+    updated.url = url;
+    await updated.save({ validateBeforeSave: false });
+  } catch (err) {
+    console.error('PUT error:', err.message);
+    res.status(400).json({ error: 'Invalid ID or update failed' });
   }
 });
 
